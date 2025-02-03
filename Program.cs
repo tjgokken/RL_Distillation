@@ -6,12 +6,11 @@ public class Program
     {
         var env = new RLEnvironment();
         var agent = new RLAgent();
+        var summary = new LearningSummary();
         var totalEpisodes = 50;
 
-        Console.WriteLine("Training the teacher agent...\n");
-        Console.WriteLine("Legend: A = Agent, G = Goal, _ = Empty space\n");
+        Console.WriteLine("Training the teacher agent...");
 
-        // Teacher training phase
         for (var episode = 0; episode < totalEpisodes; episode++)
         {
             env.Reset();
@@ -20,7 +19,8 @@ public class Program
             var steps = 0;
             var totalReward = 0.0;
 
-            Console.WriteLine($"\nEpisode {episode + 1}/{totalEpisodes}");
+            // Show simple progress indicator
+            Console.Write($"\rEpisode {episode + 1}/{totalEpisodes}");
 
             while (!done && steps < 50)
             {
@@ -32,34 +32,22 @@ public class Program
                 state = nextState;
                 done = isDone;
                 steps++;
-
-                Console.WriteLine(
-                    $"\r{env.Visualize()} | Step {steps} | Q-values: {agent.GetQTableVisualization(state)}");
-                Thread.Sleep(100);
             }
 
-            if (done)
-            {
-                agent.IncrementSuccess();
-                Console.WriteLine($"\nSuccess! Reached goal in {steps} steps. Total reward: {totalReward:F2}");
-            }
-            else
-            {
-                Console.WriteLine($"\nFailed to reach goal. Total reward: {totalReward:F2}");
-            }
+            if (done) agent.IncrementSuccess();
 
-            Console.WriteLine($"Success rate: {(double)agent.GetSuccessCount() / (episode + 1):P2}");
+            var successRate = (double)agent.GetSuccessCount() / (episode + 1);
+            summary.AddResult(episode + 1, successRate, totalReward, steps);
         }
 
-        Console.WriteLine("\nTeacher training completed!");
-        Console.WriteLine($"Teacher final success rate: {(double)agent.GetSuccessCount() / totalEpisodes:P2}");
+        Console.Clear();
+        
 
-        // Distillation phase
         Console.WriteLine("\nStarting knowledge distillation...");
-        Console.WriteLine("Training students using both pure imitation and RL-enhanced learning...\n");
-
         var distillation = new Distillation(agent);
-        distillation.Distill(25);  // Train students for 25 episodes
+        distillation.Distill(25);
+
+        summary.DisplaySummaryChart();
 
         Console.WriteLine("\nPress any key to exit...");
         Console.ReadKey();

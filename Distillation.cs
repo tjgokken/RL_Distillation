@@ -1,5 +1,8 @@
 ﻿namespace RL_Distillation;
 
+/// <summary> 
+/// Manages the knowledge transfer process from teacher to student
+/// </summary>
 public class Distillation(RLAgent teacher)
 {
     private readonly Student learningStudent = new(true);

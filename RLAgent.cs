@@ -1,5 +1,8 @@
 ﻿namespace RL_Distillation;
 
+/// <summary>
+/// The learning agent that uses Q-learning to make decisions
+/// </summary>
 public class RLAgent
 {
     private readonly Dictionary<int, double[]> qTable = new();

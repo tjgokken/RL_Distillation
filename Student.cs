@@ -1,5 +1,8 @@
 ﻿namespace RL_Distillation;
 
+/// <summary>
+/// Represents a student that can learn from a teacher or goes at it by self
+/// </summary>
 public class Student(bool isLearning)
 {
     private readonly Dictionary<int, int> learnedMoves = new();
