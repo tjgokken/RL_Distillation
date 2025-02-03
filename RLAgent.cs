@@ -14,12 +14,15 @@ public class RLAgent
 
     public int GetAction(int state)
     {
+        // Exploration: Sometimes try random actions to discover new strategies
         if (random.NextDouble() < epsilon)
             return random.Next(2);
 
+        // If we haven't seen this state, initialize it
         if (!qTable.ContainsKey(state))
             qTable[state] = new double[2];
 
+        // Exploitation: Choose the action with the highest expected reward
         return qTable[state].ToList().IndexOf(qTable[state].Max());
     }
 
@@ -27,6 +30,7 @@ public class RLAgent
     {
         if (!qTable.ContainsKey(state))
             qTable[state] = new double[2];
+
         if (!qTable.ContainsKey(nextState))
             qTable[nextState] = new double[2];
 
